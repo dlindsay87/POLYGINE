@@ -1,0 +1,8 @@
+*.a
+*.o
+*.d
+*.DS_Store
+obj/
+deps/
+glad/
+main
