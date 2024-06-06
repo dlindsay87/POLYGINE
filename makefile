@@ -18,7 +18,7 @@ DEP_FLAGS := -MMD -MP
 LIB_FLAGS := -lsdl2 -lglew -framework opengl
 
 define get_objs
-	$(eval $@_CPPS := $(shell find $(1) -name '*.cpp')) 
+	$(eval $@_CPPS := $(shell find $(1) -name '*.cpp'))
 	$(2) := $(patsubst $(1)%.cpp,$(OBJ_DIR)/$(1)%.o,$($@_CPPS))
 endef
 
@@ -33,56 +33,51 @@ $(eval $(call get_objs,$(LIB_DIR),LIB_OBJS))
 $(eval $(call get_deps,$(SRC_DIR),SRC_DEPS))
 $(eval $(call get_deps,$(LIB_DIR),LIB_DEPS))
 
+TARGET_LIB := $(LIB_DIR)/libpolygine.a
+LIB_INCS := $(wildcard $(LIB_DIR)/**/*.h)
 LIB_UNITY := $(LIB_DIR)/polygine.h
 
 TARGET_MAIN := main
-TARGET_LIB := lib/libpolygine.a
 
-.PHONY: all lib debug clean
+.PHONY: all lib debug clean-game clean-all
 
-all: lib game
-game: $(TARGET_MAIN)
+all: $(TARGET_MAIN)
 lib: $(TARGET_LIB)
 
-$(LIB_UNITY): $(shell find $(LIB_DIR)/**/* -name '*.h')
+$(LIB_UNITY): $(LIB_INCS)
 	@echo "#pragma once\n" > $@
 	@$(foreach header,$^,echo '#include $(subst $(LIB_DIR)/,,"$(header)")' >> $@;)
 	@echo "We have made $(LIB_UNITY) unity file!"
 
+-include $(LIB_DEPS)
 $(TARGET_LIB): $(LIB_OBJS)
 	@echo "Compiling $@ library..."
 	@ar rcs $@ $^
 	@echo "We have made $(TARGET_LIB) library!"
 
--include $(LIB_DEPS)
 $(OBJ_DIR)/$(LIB_DIR)/%.o: $(LIB_DIR)/%.cpp makefile
 	@echo "Compiling $@ lib object..."
-	@mkdir -p $(@D)
-	@mkdir -p $(DEP_DIR)/$(dir $<)
-	@$(CXX) $(CXXFLAGS) -I$(LIB_DIR) $(DEP_FLAGS) -MF $(DEP_DIR)/$(basename $<).d -c $< -o $@
+	@mkdir -p $(@D) $(DEP_DIR)/$(dir $<)
+	@$(CXX) $(CXXFLAGS) -I$(LIB_DIR) $(DEP_FLAGS) -MF $(DEP_DIR)/$(basename $<).d  -c $< -o $@
 
-$(TARGET_MAIN): $(TARGET_LIB) $(SRC_OBJS) 
+-include $(SRC_DEPS)
+$(TARGET_MAIN): $(TARGET_LIB) $(SRC_OBJS)
 	@echo "Compiling $@ executable..."
 	@$(CXX) $(CXXFLAGS) $^ -o $@ $(LIB_FLAGS)
 	@echo "We have made $(TARGET_MAIN)!"
 
--include $(SRC_DEPS)
-$(OBJ_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp $(LIB_UNITY) makefile
+$(OBJ_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp makefile $(LIB_UNITY)
 	@echo "Compiling $@ object..."
-	@mkdir -p $(@D)
-	@mkdir -p $(DEP_DIR)/$(<D)
+	@mkdir -p $(@D) $(DEP_DIR)/$(<D)
 	@$(CXX) $(CXXFLAGS) -I$(LIB_DIR) -I$(SRC_DIR) $(DEP_FLAGS) -MF $(DEP_DIR)/$(basename $<).d -c $< -o $@
 
-clean:
-	@rm -rf $(TARGET_MAIN) $(LIB_UNITY) {$(OBJ_DIR),$(DEP_DIR)}/$(SRC_DIR)
+clean-game:
+	@rm -rf $(TARGET_MAIN) {$(OBJ_DIR), $(DEP_DIR)}/$(SRC_DIR)
 	@echo "Cleaned game."
 
-clean-lib:
-	@rm -rf $(TARGET_LIB) $(LIB_UNITY) {$(OBJ_DIR),$(DEP_DIR)}/$(LIB_DIR)
-	@echo "Cleaned library."
-
 clean-all:
-	@make clean && make clean-lib
-	@rm -rf $(OBJ_DIR) $(DEP_DIR)
+	@make clean-game
+	@rm -rf $(TARGET_LIB) $(LIB_UNITY) $(OBJ_DIR) $(DEP_DIR)
+	@echo "Cleaned library."
 
 print-%  : ; @echo $* = $($*)

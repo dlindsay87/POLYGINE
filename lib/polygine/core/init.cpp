@@ -4,7 +4,7 @@ namespace POLYGINE {
 	
 	std::random_device rd;
 	std::mt19937 mt_engine(rd());
-
+	
 	void init() {
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 			cerr << "SDL initialization failed: " << SDL_GetError() << endl;

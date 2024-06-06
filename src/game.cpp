@@ -1,13 +1,15 @@
 #include "game.h"
 
-Game::Game(float fps, cc *name, int w, int h, unsigned int f)
-	: _fps(fps), _windowName(name), _windowWidth(w), _windowHeight(h), _windowFlags(f) {
-	_isRunning = true;
+Game::Game(cc *name, int w, int h, unsigned int f) {
 	POLYGINE::init();
+	_timer = std::make_shared<POLYGINE::Timer>();
+	_window = std::make_shared<POLYGINE::Window>(name, w, h, f);
+   	_shader = std::make_shared<POLYGINE::Shader>();
+	_inputter = std::make_shared<POLYGINE::Input>();
 }
 
 Game::~Game() {
-	SDL_Quit(); 
+	SDL_Quit();
 }
 
 void Game::run() {
@@ -16,71 +18,90 @@ void Game::run() {
 }
 
 void Game::_initGame() {
-	_window.create(_windowName, _windowWidth, _windowHeight, _windowFlags);
-	_fps == 60.0 ? _window.is_vsynced(-1) : _window.is_vsynced(0);
     _state = GS::TITLE;
-	_shader.init();
-	_timer.init(_fps);
 }
 
 void Game::_input() {
-	static int vs = 0;
-	SDL_Event event;
+	_inputter->update();
+	static SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 	    switch (event.type) {
-			case SDL_KEYDOWN:
-			    for (float &f : _randos) f = _uni_dist(POLYGINE::mt_engine);
-			    cout << endl;
-		        if (event.key.keysym.sym == SDLK_SPACE) {
-			        _state = (_state == GS::TITLE || _state == GS::PAUSED) ? GS::RUNNING : GS::PAUSED;
-		        } if (event.key.keysym.sym == SDLK_z)  {
-			        _state = GS::GAME_OVER;
-		        } if (event.key.keysym.sym == SDLK_v && _fps == 60.0)  {
-					vs %= 3;
-					_window.is_vsynced(1 - vs++);
-					
-			    }
+			case SDL_KEYDOWN:	
+				_inputter->pressKey(event.key.keysym.sym);
+				break;
+			case SDL_KEYUP:
+				_inputter->releaseKey(event.key.keysym.sym);
 				break;
 			case SDL_WINDOWEVENT:
-				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-				    _window.resize(event.window.data1, event.window.data2);
-				}
+				_inputter->windowEvent(event.window.event);
 				break;
 			case SDL_QUIT:
-				cout << endl;
 				_state = GS::GAME_OVER;
 				break;
 	    }
 	}
 }
 
+void Game::_foreverInput() {
+	if (_inputter->isKeyPressed(SDLK_SPACE)) {
+		cout << endl;
+	    _state = (_state == GS::TITLE || _state == GS::PAUSED) ? GS::RUNNING : GS::PAUSED;
+	}
+	
+	if (_inputter->isKeyPressed(SDLK_z) || _inputter->isKeyPressed(SDLK_ESCAPE)) {
+	    _state = GS::GAME_OVER;
+	} 
+}
+
+void Game::_runningInput() {
+	if (_inputter->isAnyPressed()) {
+		glClearColor(
+			_uni_dist(POLYGINE::mt_engine),
+			_uni_dist(POLYGINE::mt_engine),
+			_uni_dist(POLYGINE::mt_engine),
+			1.0
+		);
+   	}
+	
+	if (_inputter->isKeyPressed(SDLK_RETURN)) {
+   		if (_thingVec.size() > 0) _thingVec.back()->isActive = false;
+   		_thingVec.push_back(std::make_unique<POLYGINE::Thing>());
+   	}
+}
+
 void Game::_update() {
-	cout << "\r" << fixed << setprecision(3);
+	_foreverInput();
 	switch(_state) {
 		case GS::TITLE:
-			cout << "Title! ";
+			cout << "\rTitle! ";
 			break;
 		case GS::PAUSED:
-			cout << "Paused! ";
+			cout << "\rPaused! ";
 			break;
 		case GS::RUNNING:
-			cout << "Running! ";
+			_runningInput();
+			for (const auto &t : _thingVec) t->update(_inputter);
+			cout << "\rRunning! ";
 			break;
 		case GS::GAME_OVER:
-			cout << "Killed, ";
-			_isRunning = false;
+			cout << "\nKilled! ";
 			break;
 	}
+	_window->update(_inputter);
+}
+
+void Game::_draw() {
+	for (const auto &t : _thingVec) t->draw(_shader);
+	_window->swap(_shader);
 }
 
 void Game::_looper() {
 	while (_state != GS::GAME_OVER) {
 		_input();
 		_update();
-		_window.clear(_randos);
-		_shader.draw();
-		_window.swap();
-		_timer.limit(_isRunning);
+		_draw();
+		_timer->limit();
 	}  
-	cout << "\nGame Over!" << endl;
+	cout << "\nGame Over! End time: ";
+	_timer->timestamp();
 }

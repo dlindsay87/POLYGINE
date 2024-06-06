@@ -6,3 +6,5 @@ obj/
 deps/
 glad/
 main
+lib/polygine/polygine.h
+lib/polygine/entities/form.*
