@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
+
 #include <thread>
 #include <iomanip>
 #include <memory>
@@ -17,6 +19,7 @@ using std::cout;
 using std::endl;
 using std::cin;
 using std::cerr;
+using std::ios;
 using std::ctime;
 using std::flush;
 using std::setprecision;
@@ -26,6 +29,7 @@ typedef std::string str;
 typedef std::vector<std::string> strvec;
 typedef std::vector<float> fltvec;
 typedef std::vector<GLfloat> glfltvec;
+typedef std::vector<GLuint> gluintvec;
 typedef std::vector<int> intvec;
 typedef std::stringstream ss;
 typedef const char cc;

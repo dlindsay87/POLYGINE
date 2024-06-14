@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "display/shader.h"
+#include "utils/typer.h"
 #include "core/input.h"
 
 namespace POLYGINE {
@@ -33,9 +33,6 @@ namespace POLYGINE {
 		SDL_GLContext _context;
 		const unsigned char *_version;
 		
-		glm::mat4 _projMat;
-		glm::mat4 _viewMat;
-
 		void _context_version();
 		void _init_display();
 		void _is_vsynced();
@@ -46,7 +43,7 @@ namespace POLYGINE {
 	  ~Window();
 	  
 	  void update(std::shared_ptr<Input> ip);
-  	  void swap(std::shared_ptr<Shader> shader);
+  	  void swap();
 
 	  int getScreenWidth() {return _width;}
 	  int getScreenHeight() {return _height;}

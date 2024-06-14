@@ -8,18 +8,15 @@ namespace POLYGINE {
 	
 	class Mesh {
 	private:
-		GLuint _VAO, _VBO; //, _EBO;
+		GLuint _VAO, _VBO;
 		
-		int _points = 6;
-		
-		glfltvec _vertices;
-
-		//intvec _indices;
-		
-	    glm::mat4 _modelMat;
+		int _points = 99;
 		
 		std::uniform_real_distribution<float> _uni_dist;
-		glm::vec3 _colors;
+		
+		glfltvec _vertices;
+	    glm::mat4 _modelMat;
+		glm::vec3 _colors; //{1.0, 0.5, 0.2}
 
 		void _bind();
 		

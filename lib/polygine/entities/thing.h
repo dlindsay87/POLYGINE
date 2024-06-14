@@ -3,17 +3,19 @@
 
 #include "core/input.h"
 #include "mesh.h"
+#include "shapes.h"
 
 namespace POLYGINE {
 
-class Thing {
+	class Thing {
 	private:
 		float _mass, _scale;
 		cartesian _position;
 		cartesian _velocity;
 		orientation _orient;
 		
-		std::unique_ptr<Mesh> _mesh;
+		//std::unique_ptr<Mesh> _mesh;
+		std::unique_ptr<Shape> _shape;
 
 	public:
 		Thing();
@@ -21,7 +23,7 @@ class Thing {
 		bool isActive = true;
 		
 		void update(std::shared_ptr<Input> ip);
-		void draw(std::shared_ptr<Shader> shader);
+		void draw(std::shared_ptr<Shader> shader, glm::vec3 light);
 
 		float getMass() {return _mass;}
 		float getScale() {return _scale;}

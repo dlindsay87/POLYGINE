@@ -52,18 +52,8 @@ namespace POLYGINE {
 	}
 
 	void Window::_resize() {
-		static float f = 1.0 / tan(glm::radians(45.0f) * 0.5f);
-		
 		SDL_GetWindowSize(_window, &_width, &_height);
 		glViewport(0, 0, _width, _height);
-		
-		if (getAspectRatio() > 1) {
-			_projMat[0][0] =  f / getAspectRatio();
-			_projMat[1][1] = f;
-		} else {
-			_projMat[0][0] = f;
-			_projMat[1][1] = f * getAspectRatio();
-		}
 	}
 
 	Window::Window(cc *name, int w, int h, unsigned int f) {
@@ -88,9 +78,6 @@ namespace POLYGINE {
 		_context_version();
 		_init_display();
 		_is_vsynced();
-
-		_projMat = glm::perspective(glm::radians(45.0f), getAspectRatio(), 0.1f, 10.0f);
-		_viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 	}
 	
 	Window::~Window() {
@@ -108,10 +95,7 @@ namespace POLYGINE {
 		}
 	}
 
-	void Window::swap(std::shared_ptr<Shader> shader) {
-		shader->use();
-		shader->setProjectionMatrix(_projMat);
-		shader->setViewMatrix(_viewMat);
+	void Window::swap() {
 		SDL_GL_SwapWindow(_window);
 	}
 	

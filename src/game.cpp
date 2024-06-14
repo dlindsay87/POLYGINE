@@ -4,7 +4,8 @@ Game::Game(cc *name, int w, int h, unsigned int f) {
 	POLYGINE::init();
 	_timer = std::make_shared<POLYGINE::Timer>();
 	_window = std::make_shared<POLYGINE::Window>(name, w, h, f);
-   	_shader = std::make_shared<POLYGINE::Shader>();
+	_camera = std::make_unique<POLYGINE::Camera>(_window);
+	_lighter = std::make_unique<POLYGINE::Lighting>(0.2, 1);
 	_inputter = std::make_shared<POLYGINE::Input>();
 }
 
@@ -18,6 +19,21 @@ void Game::run() {
 }
 
 void Game::_initGame() {
+    _shaderVec.push_back( // light shader
+			std::make_shared<POLYGINE::Shader>(
+			"lib/polygine/display/shaders/lightshader.vert",
+			"lib/polygine/display/shaders/lightshader.frag"
+		)
+	);
+			
+	_shaderVec.push_back( // obj shader
+			std::make_shared<POLYGINE::Shader>(
+			"lib/polygine/display/shaders/shader.vert",
+			"lib/polygine/display/shaders/shader.frag"
+		)
+	);
+	
+	_camera->linkUBOtoShaders(_shaderVec);
     _state = GS::TITLE;
 }
 
@@ -67,6 +83,9 @@ void Game::_runningInput() {
    		if (_thingVec.size() > 0) _thingVec.back()->isActive = false;
    		_thingVec.push_back(std::make_unique<POLYGINE::Thing>());
    	}
+
+	for (const auto &t : _thingVec) t->update(_inputter);
+	_camera->update(_inputter, _window);
 }
 
 void Game::_update() {
@@ -79,8 +98,7 @@ void Game::_update() {
 			cout << "\rPaused! ";
 			break;
 		case GS::RUNNING:
-			_runningInput();
-			for (const auto &t : _thingVec) t->update(_inputter);
+			_runningInput();	
 			cout << "\rRunning! ";
 			break;
 		case GS::GAME_OVER:
@@ -91,8 +109,9 @@ void Game::_update() {
 }
 
 void Game::_draw() {
-	for (const auto &t : _thingVec) t->draw(_shader);
-	_window->swap(_shader);
+	_lighter->draw(_shaderVec[0]);
+	for (const auto &t : _thingVec) t->draw(_shaderVec[1], _lighter->getLight());
+	_window->swap();
 }
 
 void Game::_looper() {

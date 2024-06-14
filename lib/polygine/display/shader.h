@@ -1,12 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "utils/typer.h"
+#include "utils/iomanager.h"
 #include "utils/rad.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace POLYGINE {
 
@@ -15,23 +11,11 @@ namespace POLYGINE {
 		GLint  _success;
 		GLchar _infoLog[512];
 		
-		cc *_vertexShaderSource;
+		const GLchar* _vertSource;
 		GLuint _vertexShader;
 		
-		cc *_fragmentShaderSource;
+		const GLchar* _fragSource;
 		GLuint _fragmentShader;
-
-		GLuint _shaderProgram;
-		
-	    glm::mat4 _proj;
-	    glm::mat4 _view;
-	    glm::mat4 _model;
-		glm::vec3 _color;
-
-	    GLuint _projLoc;
-	    GLuint _viewLoc;
-	    GLuint _modelLoc;
-		GLuint _colorLoc;
 		
 		void _compile_vertex();
 		void _compile_fragment();
@@ -39,16 +23,16 @@ namespace POLYGINE {
 		void _establish_matrices();
 		
 	public:
-		Shader();
+		Shader(cc* vPath, cc* fPath);
 		~Shader();
+		
+		GLuint ID;
 
 		void use();
 		
-	    void setProjectionMatrix(const glm::mat4 &proj);
-	    void setViewMatrix(const glm::mat4 &view);
-	    void setModelMatrix(const glm::mat4 &model);
-		void setColor(const glm::vec3 &color);
-		
+		void setMat4(const std::string &name, const glm::mat4 &mat);
+		void setVec3(const std::string &name, const glm::vec3 &vec);
+
 	};
 	
 }

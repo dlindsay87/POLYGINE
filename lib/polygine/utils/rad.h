@@ -2,7 +2,12 @@
 #define RAD_H
 
 #include <cmath>
+
 #include "utils/typer.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace POLYGINE {
 	
@@ -16,10 +21,11 @@ namespace POLYGINE {
 	struct polar {float r; float theta; float phi;};
 	struct orientation {float theta; float phi;};
 
-	void getPolFromCart(cartesian c, polar &p);
-	void getCartFromPol(polar p, cartesian &c);
+	void getPolFromCart(cartesian &c, polar &p);
+	void getCartFromPol(polar &p, cartesian &c);
 
-	void fan2D(glfltvec &arr, int tris);
+	void fan2D(glfltvec &verts, int tris);
+	void _genCubeSphere(std::vector<glm::vec3> &vertices, gluintvec &indices, uint subs, float radius);
 
 	// custom transformations that are redundant
 	/*void rotate(glfltvec &arr, float rx, float ry, float rz);

@@ -2,35 +2,88 @@
 
 namespace POLYGINE {
 	
-	void getPolFromCart(cartesian c, polar &p) {
+	void getPolFromCart(cartesian &c, polar &p) {
 		p.r = sqrt(pow(c.x, 2.0) + pow(c.y, 2.0) + pow(c.z, 2.0));
 		p.theta = acos(c.z/p.r);
-		p.phi = copysign(acos(c.x/sqrt(pow(c.x, 2.0) + pow(c.y, 2.0))), c.y);
+		p.phi = atan2(c.y, c.x); //copysign(acos(c.x/sqrt(pow(c.x, 2.0) + pow(c.y, 2.0))), c.y);
 	}
 
-	void getCartFromPol(polar p, cartesian &c) {
+	void getCartFromPol(polar &p, cartesian &c) {
 		c.x = p.r * sin(p.theta) * cos(p.phi);
 		c.y = p.r * sin(p.theta) * sin(p.phi);
 		c.z = p.r * cos(p.theta);
 	}
 	
-	void fan2D(glfltvec &arr, int tris) {
+	void fan2D(glfltvec &verts, int tris) {
 		int len = (tris + 2) * M_DIM;
 		float angle = (float)(M_TAU / tris);
 		
-		arr.clear();
-		arr.reserve(len);
+		verts.clear();
+		verts.reserve(len);
 		
 		polar p_point {1.0, 0.0, 0.0};
 		cartesian c_point {0.0, 0.0, 0.0};
 	
 		for (int i = 0; i < len; i += M_DIM) {
-			arr.push_back(c_point.x);
-			arr.push_back(c_point.z);
-			arr.push_back(c_point.y);
+			verts.push_back(c_point.x);
+			verts.push_back(c_point.z);
+			verts.push_back(c_point.y);
 			getCartFromPol(p_point, c_point);
 			p_point.theta += angle;
 		}
+	}
+	
+	void _genCubeSphere(std::vector<glm::vec3> &vertices, gluintvec &indices, uint subs, float radius) {
+	    // Clear any existing data
+	    vertices.clear();
+	    indices.clear();
+		subs++;
+	    // Generate vertices and indices for each face
+	    for (int face = 0; face < 6; face++) {
+	        for (int i = 0; i <= subs; i++) {
+	            for (int j = 0; j <= subs; j++) {
+	                float a = (float)i / subs;
+	                float b = (float)j / subs;
+
+	                // Calculate vertex position based on face and subdivision
+	                glm::vec3 vertex;
+	                switch (face) {
+	                    case 0: // +X face
+	                        vertex = glm::vec3(1.0f, -1.0f + 2.0f * a, -1.0f + 2.0f * b);
+	                        break;
+	                    case 1: // -X face
+	                        vertex = glm::vec3(-1.0f, -1.0f + 2.0f * a, -1.0f + 2.0f * b);
+	                        break;
+	                    case 2: // +Y face
+	                        vertex = glm::vec3(-1.0f + 2.0f * a, 1.0f, -1.0f + 2.0f * b);
+	                        break;
+	                    case 3: // -Y face
+	                        vertex = glm::vec3(-1.0f + 2.0f * a, -1.0f, -1.0f + 2.0f * b);
+	                        break;
+	                    case 4: // +Z face
+	                        vertex = glm::vec3(-1.0f + 2.0f * a, -1.0f + 2.0f * b, 1.0f);
+	                        break;
+	                    case 5: // -Z face
+	                        vertex = glm::vec3(-1.0f + 2.0f * a, -1.0f + 2.0f * b, -1.0f);
+	                        break;
+	                }
+
+	                // Add the normalized, scaled vertex to the list
+	                vertices.push_back(glm::normalize(vertex) *  radius);
+
+	                // Add indices for triangles
+	                if (i < subs && j < subs) {
+	                    int base = (face * (subs + 1) + i) * (subs + 1) + j;
+	                    indices.push_back(base);
+	                    indices.push_back(base + 1);
+	                    indices.push_back(base + (subs + 1));
+	                    indices.push_back(base + 1);
+	                    indices.push_back(base + (subs + 1) + 1);
+	                    indices.push_back(base + (subs + 1));
+	                }
+	            }
+	        }
+	    }
 	}
 	
 	/*void rotate(glfltvec &arr, float rx, float ry, float rz){

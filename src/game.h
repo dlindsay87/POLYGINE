@@ -39,9 +39,11 @@ private:
 	
 	std::shared_ptr<POLYGINE::Timer> _timer;
 	std::shared_ptr<POLYGINE::Window> _window;
-	std::shared_ptr<POLYGINE::Shader> _shader;
+	std::unique_ptr<POLYGINE::Camera> _camera;
 	std::shared_ptr<POLYGINE::Input> _inputter;
+	std::unique_ptr<POLYGINE::Lighting> _lighter;
 	
+	std::vector<std::shared_ptr<POLYGINE::Shader>> _shaderVec;
 	std::vector<std::unique_ptr<POLYGINE::Thing>> _thingVec;
 
 	GS _state;
