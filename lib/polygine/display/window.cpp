@@ -26,6 +26,9 @@ namespace POLYGINE {
 	}
 
 	void Window::_init_display() {
+		SDL_ShowCursor(0);
+		SDL_WarpMouseInWindow(_window, _width / 2, _height / 2);
+		SDL_SetWindowGrab(_window, SDL_TRUE);
 		glEnable(GL_DEPTH_TEST);
 		glShadeModel(GL_SMOOTH);
 		glViewport(0, 0, _width, _height);
@@ -74,7 +77,7 @@ namespace POLYGINE {
 			cerr << "SDL window creation failed: " << SDL_GetError() << endl;
 			exit(1);
 		}
-
+		
 		_context_version();
 		_init_display();
 		_is_vsynced();
@@ -85,14 +88,18 @@ namespace POLYGINE {
 	  SDL_DestroyWindow(_window);
 	}
 	
-	void Window::update(std::shared_ptr<Input> ip) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	void Window::takeInput(std::shared_ptr<Input> ip) {
 		if (ip -> isKeyPressed(SDLK_v)) {
 			cout << endl;
 			_is_vsynced();	
 		} if (ip -> isWinAdjusted()) {
 		    _resize();
 		}
+	}
+	
+	void Window::update() {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		SDL_WarpMouseInWindow(_window, _width / 2, _height / 2);
 	}
 
 	void Window::swap() {

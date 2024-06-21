@@ -2,6 +2,18 @@
 
 namespace POLYGINE {
 	
+	void modVec3(glm::vec3 &vec, float mod) {
+		if (vec.x < 0) vec.x += mod;
+		if (vec.y < 0) vec.y += mod;
+		if (vec.z < 0) vec.z += mod;
+		vec = glm::mod(vec, mod);
+	}
+	
+	void modByComponent(float &f, float mod) {
+		if (f < 0) f += mod;
+		f = glm::mod(f, mod);
+	}
+	
 	void getPolFromCart(cartesian &c, polar &p) {
 		p.r = sqrt(pow(c.x, 2.0) + pow(c.y, 2.0) + pow(c.z, 2.0));
 		p.theta = acos(c.z/p.r);
@@ -14,30 +26,38 @@ namespace POLYGINE {
 		c.z = p.r * cos(p.theta);
 	}
 	
-	void fan2D(glfltvec &verts, int tris) {
-		int len = (tris + 2) * M_DIM;
-		float angle = (float)(M_TAU / tris);
-		
-		verts.clear();
-		verts.reserve(len);
-		
-		polar p_point {1.0, 0.0, 0.0};
-		cartesian c_point {0.0, 0.0, 0.0};
+	glm::vec3 getPosFromAng(float r, glm::vec3 ang) {
+		ang *= M_DEG2RAD;
+		return glm::vec3(
+			r * sin(ang.z) * cos(ang.x),
+	        r * cos(ang.x) * cos(ang.z),
+			r * sin(ang.x)
+		);
+	}
 	
-		for (int i = 0; i < len; i += M_DIM) {
-			verts.push_back(c_point.x);
-			verts.push_back(c_point.z);
-			verts.push_back(c_point.y);
-			getCartFromPol(p_point, c_point);
-			p_point.theta += angle;
+	void fan2D(std::vector<glm::vec3> &vertices, gluintvec &indices, int tris) {
+		vertices.clear();
+		indices.clear();
+
+		float angle = 0.0f;
+		vertices.push_back(glm::vec3(0.0f));
+
+		for (int i = 0; i < tris; i++) {
+			vertices.push_back(glm::vec3(sin(angle), 0.0f, cos(angle)));
+
+			indices.push_back(0);
+			indices.push_back(i + 1);
+			indices.push_back(i + 1 != tris ? i + 2 : 1);
+			
+			angle += (float)(M_TAU / tris);
 		}
 	}
 	
-	void _genCubeSphere(std::vector<glm::vec3> &vertices, gluintvec &indices, uint subs, float radius) {
+	void genCubeSphere(std::vector<glm::vec3> &vertices, gluintvec &indices, uint subs) {
 	    // Clear any existing data
 	    vertices.clear();
 	    indices.clear();
-		subs++;
+		//subs++;
 	    // Generate vertices and indices for each face
 	    for (int face = 0; face < 6; face++) {
 	        for (int i = 0; i <= subs; i++) {
@@ -69,7 +89,7 @@ namespace POLYGINE {
 	                }
 
 	                // Add the normalized, scaled vertex to the list
-	                vertices.push_back(glm::normalize(vertex) *  radius);
+	                vertices.push_back(glm::normalize(vertex));
 
 	                // Add indices for triangles
 	                if (i < subs && j < subs) {

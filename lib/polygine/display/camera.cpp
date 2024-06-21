@@ -14,10 +14,38 @@ namespace POLYGINE {
 	        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(_projMat));
 	    }
 		
-		Camera::Camera(std::shared_ptr<Window> w) {
+		void Camera::_swivel() {
+			_PRY.x = glm::clamp(_PRY.x, -60.0f, 60.0f);
+			modByComponent(_PRY.y, M_CIRCLE);
+			modByComponent(_PRY.z, M_CIRCLE);
+			_targPos = (_targ ? _targPos = _targ->getPosition() : glm::vec3(0.0f));
+			_position = _targPos - getPosFromAng(5.0, _PRY);
+			_viewMat = glm::lookAt(_position, _targPos, _worldUp);
+			
+			if (_targ) {
+				_targOri = _targ->getOrientation();
+				_targ->setOrientation(_targOri.x, _targOri.y, _PRY.z);
+			}	
+		}
+		
+		void Camera::_zoom() {
+			_zoomFactor = glm::clamp(_zoomFactor, 7.5f, 120.0f);
+			_projFactor = 1.0 / tan(glm::radians(_zoomFactor) * 0.5f);
+			
+			if (_win->getAspectRatio() > 1) {
+				_projMat[0][0] = _projFactor / _win->getAspectRatio();
+				_projMat[1][1] = _projFactor;
+			} else {
+				_projMat[0][0] = _projFactor;
+				_projMat[1][1] = _projFactor * _win->getAspectRatio();
+			}
+		}
+		
+		Camera::Camera(std::shared_ptr<Window> w)
+			: _win(w) {
+			_viewMat = glm::lookAt(_position, _targPos, _worldUp);
+			_projMat = glm::perspective(glm::radians(_zoomFactor), _win->getAspectRatio(), 0.1f, 100.0f);
 			_initUBO();
-			_projMat = glm::perspective(glm::radians(_zoom), w->getAspectRatio(), 0.1f, 10.0f);
-			_viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(_position.x, _position.y, _position.z));
 		};
 		
 		Camera::~Camera() {
@@ -33,24 +61,14 @@ namespace POLYGINE {
 			_updateUBO();
         }
 		
-		void Camera::update(std::shared_ptr<Input> ip, std::shared_ptr<Window> w) {
-			static float f = 1.0 / tan(glm::radians(_zoom) * 0.5f);
-			
-			if (w->getAspectRatio() > 1) {
-				_projMat[0][0] =  f / w->getAspectRatio();
-				_projMat[1][1] = f;
-			} else {
-				_projMat[0][0] = f;
-				_projMat[1][1] = f * w->getAspectRatio();
-			}
-			
-			if (ip -> isKeyDown(SDLK_w)) _position.y -= 0.1;
-			if (ip -> isKeyDown(SDLK_s)) _position.y += 0.1;
-			if (ip -> isKeyDown(SDLK_d)) _position.x -= 0.1;
-			if (ip -> isKeyDown(SDLK_a)) _position.x += 0.1;
-			
-			_viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(_position.x, _position.y, _position.z));
-				
+		void Camera::takeInput(std::shared_ptr<Input> ip) {
+			_PRY += ip->getMotion() * _mouseSensitivity;
+			_zoomFactor += ip->getWheel() * _wheelSensitivity;
+		}
+		
+		void Camera::update() {
+			_swivel();
+			_zoom();
 			_updateUBO();
 		};
 		

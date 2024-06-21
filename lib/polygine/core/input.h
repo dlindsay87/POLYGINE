@@ -13,6 +13,9 @@ namespace POLYGINE {
 	    std::unordered_map<unsigned int, bool> _keyMap;
 	    std::unordered_map<unsigned int, bool> _previousKeyMap;
 		
+		glm::vec3 _dMouse;
+		float _dWheel;
+		
 		bool _winAdj = false;
 		
 	public:
@@ -25,6 +28,12 @@ namespace POLYGINE {
 	    bool isKeyPressed(unsigned int keyID);
 		
 		bool isAnyPressed();
+		
+		void detectMotion(SDL_MouseMotionEvent e);
+		glm::vec3 getMotion() {return _dMouse;}
+		
+		void detectWheel(SDL_MouseWheelEvent e);
+		float getWheel() {return _dWheel;}
 		
 		void windowEvent(unsigned int winID);
 		bool isWinAdjusted() {return _winAdj;}

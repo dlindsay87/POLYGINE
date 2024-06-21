@@ -9,6 +9,8 @@ namespace POLYGINE {
 	
 	void Input::update() {
 	    for (auto &it : _keyMap) _previousKeyMap[it.first] = it.second;
+		_dMouse = glm::vec3(0.0f);
+		_dWheel = 0.0;
 		_winAdj = false;
 	}
 	
@@ -32,6 +34,16 @@ namespace POLYGINE {
 	bool Input::isAnyPressed() {
 	    for (auto &it : _keyMap) if (it.second && !_previousKeyMap[it.first]) return true;
 	    return false;
+	}
+	
+	void Input::detectMotion(SDL_MouseMotionEvent e) {
+		_dMouse.x = -e.yrel;
+		_dMouse.y = 0.0f;
+		_dMouse.z = e.xrel;
+	}
+	
+	void Input::detectWheel(SDL_MouseWheelEvent e) {
+		_dWheel = e.preciseY;
 	}
 	
 	void Input::windowEvent(unsigned int winID) {

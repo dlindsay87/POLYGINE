@@ -28,6 +28,17 @@ public:
 	
 private:
 	std::uniform_real_distribution<float> _uni_dist;
+	
+	std::shared_ptr<POLYGINE::Timer> _timer;
+	std::shared_ptr<POLYGINE::Window> _window;
+	std::shared_ptr<POLYGINE::Input> _inputter;
+	std::shared_ptr<POLYGINE::Lighting> _lighter;
+	std::unique_ptr<POLYGINE::Camera> _camera;
+	
+	std::vector<std::shared_ptr<POLYGINE::Shader>> _shaderVec;
+	std::vector<std::shared_ptr<POLYGINE::Thing>> _thingVec;
+
+	GS _state;
 
 	void _initGame();
 	void _looper();
@@ -36,17 +47,6 @@ private:
 	void _runningInput();
 	void _update();
 	void _draw();
-	
-	std::shared_ptr<POLYGINE::Timer> _timer;
-	std::shared_ptr<POLYGINE::Window> _window;
-	std::unique_ptr<POLYGINE::Camera> _camera;
-	std::shared_ptr<POLYGINE::Input> _inputter;
-	std::unique_ptr<POLYGINE::Lighting> _lighter;
-	
-	std::vector<std::shared_ptr<POLYGINE::Shader>> _shaderVec;
-	std::vector<std::unique_ptr<POLYGINE::Thing>> _thingVec;
-
-	GS _state;
 	
 };
 

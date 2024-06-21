@@ -4,9 +4,9 @@ Game::Game(cc *name, int w, int h, unsigned int f) {
 	POLYGINE::init();
 	_timer = std::make_shared<POLYGINE::Timer>();
 	_window = std::make_shared<POLYGINE::Window>(name, w, h, f);
-	_camera = std::make_unique<POLYGINE::Camera>(_window);
-	_lighter = std::make_unique<POLYGINE::Lighting>(0.2, 1);
+	_lighter = std::make_shared<POLYGINE::Lighting>(0.2, 2);
 	_inputter = std::make_shared<POLYGINE::Input>();
+	_camera = std::make_unique<POLYGINE::Camera>(_window);
 }
 
 Game::~Game() {
@@ -48,6 +48,12 @@ void Game::_input() {
 			case SDL_KEYUP:
 				_inputter->releaseKey(event.key.keysym.sym);
 				break;
+			case SDL_MOUSEMOTION:
+				_inputter->detectMotion(event.motion);
+				break;
+			case SDL_MOUSEWHEEL:
+				_inputter->detectWheel(event.wheel);
+				break;
 			case SDL_WINDOWEVENT:
 				_inputter->windowEvent(event.window.event);
 				break;
@@ -66,7 +72,8 @@ void Game::_foreverInput() {
 	
 	if (_inputter->isKeyPressed(SDLK_z) || _inputter->isKeyPressed(SDLK_ESCAPE)) {
 	    _state = GS::GAME_OVER;
-	} 
+	}
+	_window->takeInput(_inputter);
 }
 
 void Game::_runningInput() {
@@ -75,17 +82,22 @@ void Game::_runningInput() {
 			_uni_dist(POLYGINE::mt_engine),
 			_uni_dist(POLYGINE::mt_engine),
 			_uni_dist(POLYGINE::mt_engine),
-			1.0
+			1.0f
 		);
    	}
 	
 	if (_inputter->isKeyPressed(SDLK_RETURN)) {
-   		if (_thingVec.size() > 0) _thingVec.back()->isActive = false;
-   		_thingVec.push_back(std::make_unique<POLYGINE::Thing>());
+   		_thingVec.push_back(std::make_shared<POLYGINE::Thing>());
+		_camera->setTarget(_thingVec.back());
    	}
-
-	for (const auto &t : _thingVec) t->update(_inputter);
-	_camera->update(_inputter, _window);
+	
+	if (_inputter->isKeyPressed(SDLK_DELETE)) {
+		_thingVec.clear();
+		_camera->setTarget(nullptr);
+	}
+	
+	_camera->takeInput(_inputter);
+	if (_thingVec.size() > 0) _thingVec.back()->takeInput(_inputter);
 }
 
 void Game::_update() {
@@ -98,14 +110,16 @@ void Game::_update() {
 			cout << "\rPaused! ";
 			break;
 		case GS::RUNNING:
-			_runningInput();	
+			_runningInput();
+			_camera->update();
+			for (const auto &t : _thingVec) t->update();
 			cout << "\rRunning! ";
 			break;
 		case GS::GAME_OVER:
 			cout << "\nKilled! ";
 			break;
 	}
-	_window->update(_inputter);
+	_window->update();
 }
 
 void Game::_draw() {
