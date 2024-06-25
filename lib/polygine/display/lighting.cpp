@@ -3,7 +3,7 @@
 namespace POLYGINE {
 
 	Lighting::Lighting(float r, uint points) {
-		_mesh = std::make_unique<Mesh>(points, ST::CUBESPHERE);
+		_mesh = std::make_unique<Mesh>(points, ST::CUBESPHERE, false);
 		_mesh->update(r, _position, _orientation);
 	}
 

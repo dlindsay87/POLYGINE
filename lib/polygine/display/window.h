@@ -43,7 +43,7 @@ namespace POLYGINE {
 	  ~Window();
 	  
 	  void takeInput(std::shared_ptr<Input> ip);
-	  void update();
+	  void update(uint state);
   	  void swap();
 
 	  int getScreenWidth() {return _width;}

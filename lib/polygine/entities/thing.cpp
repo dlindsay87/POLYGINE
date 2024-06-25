@@ -31,7 +31,7 @@ namespace POLYGINE {
              }
 	     }
 		
-		if (ip -> isKeyPressed(SDLK_f)) {
+		if (ip -> isKeyPressed(SDLK_m)) {
 			_mesh->printVertices();
 		}
 
@@ -44,17 +44,35 @@ namespace POLYGINE {
 			_scale -= 0.05;
 		}
 		
-		modVec3(_orientation, M_CIRCLE);
+		modVec3(_orientation, M_CIRCLE, M_SEMI);
 		_scale = glm::clamp(_scale, 0.05f, 100.0f);
 
-		_radYaw = glm::radians(_orientation.z);
+		_radYaw = glm::radians(_camYaw);
 		_forward = glm::vec3(sin(_radYaw), cos(_radYaw), 0.0f);
 		_right  = glm::vec3(cos(_radYaw), -sin(_radYaw), 0.0f);
 			
-		if (ip -> isKeyDown(SDLK_UP) || ip -> isKeyDown(SDLK_w)) _position += _forward * 0.1f;
-		if (ip -> isKeyDown(SDLK_DOWN) || ip -> isKeyDown(SDLK_s)) _position -= _forward * 0.1f;
-		if (ip -> isKeyDown(SDLK_RIGHT) || ip -> isKeyDown(SDLK_d)) _position += _right * 0.1f;
-		if (ip -> isKeyDown(SDLK_LEFT) || ip -> isKeyDown(SDLK_a)) _position -= _right * 0.1f;
+		if (ip -> isKeyDown(SDLK_UP) || ip -> isKeyDown(SDLK_w)) {
+			circleTweenScalar(_orientation.z, _camYaw);
+			_position += _forward * 0.1f;
+		}
+		if (ip -> isKeyDown(SDLK_DOWN) || ip -> isKeyDown(SDLK_s)) {
+			circleTweenScalar(_orientation.z, _camYaw + M_SEMI);
+			_position -= _forward * 0.1f;
+		}
+		if (ip -> isKeyDown(SDLK_RIGHT) || ip -> isKeyDown(SDLK_d)) {
+	        if (std::abs(_camYaw - _orientation.z) > M_90) {
+	            circleTweenScalar(_orientation.z, _camYaw + M_SEMI);
+	        } else circleTweenScalar(_orientation.z, _camYaw);
+
+			_position += _right * 0.1f;
+		}
+		if (ip -> isKeyDown(SDLK_LEFT) || ip -> isKeyDown(SDLK_a)) {
+	        if (std::abs(_camYaw - _orientation.z) > M_90) {
+	            circleTweenScalar(_orientation.z, _camYaw + M_SEMI);
+	        } else circleTweenScalar(_orientation.z, _camYaw);
+			
+			_position -= _right * 0.1f;
+		}
 	}
 	
 	void Thing::update() {

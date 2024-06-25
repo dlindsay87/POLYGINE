@@ -30,13 +30,15 @@ namespace POLYGINE {
 	}
 
 
-	Mesh::Mesh() {
+	Mesh::Mesh(bool verbose) {
 		_points = (uint)(_uni_dist(POLYGINE::mt_engine) * 10);
 		_type = _uni_dist(POLYGINE::mt_engine) < 0.5 ? POLYGINE::ST::POLYGON : POLYGINE::ST::CUBESPHERE;
 		if (_type == ST::CUBESPHERE && _points < 1) _points = 1;
 		if (_type == ST::POLYGON && _points < 3) _points = 3;
-		cout << "I have " << _points << " points and a ";
-		cout << (_type == ST::POLYGON ? "POLYGON shape.\n" : "SPHERECUBE shape.\n");
+		if (verbose) {
+			cout << "I have " << _points << " points and a ";
+			cout << (_type == ST::POLYGON ? "POLYGON shape.\n" : "SPHERECUBE shape.\n");
+		}
 		
 		glGenBuffers(1, &_EBO);
 		glGenBuffers(1, &_VBO);
@@ -47,12 +49,14 @@ namespace POLYGINE {
 		_colors.z = _uni_dist(mt_engine);
 	}
 
-	Mesh::Mesh(uint points, ST type) 
+	Mesh::Mesh(uint points, ST type, bool verbose) 
 		: _points(points), _type(type) {
 		if (_type == ST::CUBESPHERE && _points < 1) _points = 1;
 		if (_type == ST::POLYGON && _points < 3) _points = 3;
-		cout << "I have " << _points << " points and a ";
-		cout << (_type == ST::POLYGON ? "POLYGON shape.\n" : "SPHERECUBE shape.\n");
+		if (verbose) {
+			cout << "I have " << _points << " points and a ";
+			cout << (_type == ST::POLYGON ? "POLYGON shape.\n" : "SPHERECUBE shape.\n");
+		}
 			
 		glGenBuffers(1, &_EBO);
 		glGenBuffers(1, &_VBO);
@@ -79,8 +83,8 @@ namespace POLYGINE {
 		_modelMat = glm::translate(_modelMat, p);
 		_modelMat = glm::rotate(_modelMat, glm::radians(o.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		_modelMat = glm::rotate(_modelMat, glm::radians(o.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        _modelMat = glm::rotate(_modelMat, -glm::radians(o.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		//tell me why the z axis (yaw) must be negative?
+        _modelMat = glm::rotate(_modelMat, glm::radians(o.z), glm::vec3(0.0f, 0.0f, -1.0f));
 		_modelMat = glm::scale(_modelMat, glm::vec3(s));
  
 	}

@@ -28,7 +28,7 @@ namespace POLYGINE {
 	    bool isKeyPressed(unsigned int keyID);
 		
 		bool isAnyPressed();
-		
+
 		void detectMotion(SDL_MouseMotionEvent e);
 		glm::vec3 getMotion() {return _dMouse;}
 		

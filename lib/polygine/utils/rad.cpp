@@ -2,28 +2,14 @@
 
 namespace POLYGINE {
 	
-	void modVec3(glm::vec3 &vec, float mod) {
-		if (vec.x < 0) vec.x += mod;
-		if (vec.y < 0) vec.y += mod;
-		if (vec.z < 0) vec.z += mod;
-		vec = glm::mod(vec, mod);
+	float modScalar(float f, float mod, float offset) {
+		return glm::mod(f + offset, mod) - offset;
 	}
 	
-	void modByComponent(float &f, float mod) {
-		if (f < 0) f += mod;
-		f = glm::mod(f, mod);
-	}
-	
-	void getPolFromCart(cartesian &c, polar &p) {
-		p.r = sqrt(pow(c.x, 2.0) + pow(c.y, 2.0) + pow(c.z, 2.0));
-		p.theta = acos(c.z/p.r);
-		p.phi = atan2(c.y, c.x); //copysign(acos(c.x/sqrt(pow(c.x, 2.0) + pow(c.y, 2.0))), c.y);
-	}
-
-	void getCartFromPol(polar &p, cartesian &c) {
-		c.x = p.r * sin(p.theta) * cos(p.phi);
-		c.y = p.r * sin(p.theta) * sin(p.phi);
-		c.z = p.r * cos(p.theta);
+	void modVec3(glm::vec3 &vec, float mod, float offset) {
+	    vec.x = modScalar(vec.x, mod, offset);
+	    vec.y = modScalar(vec.y, mod, offset);
+	    vec.z = modScalar(vec.z, mod, offset);
 	}
 	
 	glm::vec3 getPosFromAng(float r, glm::vec3 ang) {
@@ -57,7 +43,6 @@ namespace POLYGINE {
 	    // Clear any existing data
 	    vertices.clear();
 	    indices.clear();
-		//subs++;
 	    // Generate vertices and indices for each face
 	    for (int face = 0; face < 6; face++) {
 	        for (int i = 0; i <= subs; i++) {
@@ -105,6 +90,25 @@ namespace POLYGINE {
 	        }
 	    }
 	}
+	
+	void circleTweenScalar(float &init, float fin, float inc) {
+		float dir = modScalar(fin - init, M_CIRCLE, M_SEMI);
+
+	    if (std::abs(dir) < inc) init = fin;
+		else init += std::copysign(inc, dir);
+	}
+	
+	/*void getPolFromCart(cartesian &c, polar &p) {
+		p.r = sqrt(pow(c.x, 2.0) + pow(c.y, 2.0) + pow(c.z, 2.0));
+		p.theta = acos(c.z/p.r);
+		p.phi = atan2(c.y, c.x); //copysign(acos(c.x/sqrt(pow(c.x, 2.0) + pow(c.y, 2.0))), c.y);
+	}
+
+	void getCartFromPol(polar &p, cartesian &c) {
+		c.x = p.r * sin(p.theta) * cos(p.phi);
+		c.y = p.r * sin(p.theta) * sin(p.phi);
+		c.z = p.r * cos(p.theta);
+	}*/
 	
 	/*void rotate(glfltvec &arr, float rx, float ry, float rz){
 		rx *= M_DEG2RAD;

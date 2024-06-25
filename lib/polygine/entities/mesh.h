@@ -33,8 +33,8 @@ namespace POLYGINE {
 		void _bind();
 		
 	public:
-		Mesh();
-		Mesh(uint points, ST type);
+		Mesh(bool verbose = true);
+		Mesh(uint points, ST type, bool verbose = true);
 		~Mesh();
 		
 		void setPoints(uint p) {_points = p;}

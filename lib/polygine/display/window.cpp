@@ -26,9 +26,6 @@ namespace POLYGINE {
 	}
 
 	void Window::_init_display() {
-		SDL_ShowCursor(0);
-		SDL_WarpMouseInWindow(_window, _width / 2, _height / 2);
-		SDL_SetWindowGrab(_window, SDL_TRUE);
 		glEnable(GL_DEPTH_TEST);
 		glShadeModel(GL_SMOOTH);
 		glViewport(0, 0, _width, _height);
@@ -38,7 +35,7 @@ namespace POLYGINE {
 	void Window::_is_vsynced(){
 		static int vs = 0;
 		SDL_GL_SetSwapInterval(vs);
-		vs = (vs + 1 == 2 ? -1: vs + 1);
+		vs = (vs + 1 == 2 ? -1 : vs + 1);
 		
 		cout << "Vsync is ";
 		switch (SDL_GL_GetSwapInterval()) {
@@ -97,9 +94,19 @@ namespace POLYGINE {
 		}
 	}
 	
-	void Window::update() {
+	void Window::update(uint state) {
+		switch (state){
+			case 2:
+				SDL_ShowCursor(0);
+				SDL_WarpMouseInWindow(_window, _width / 2, _height / 2);
+				SDL_SetWindowGrab(_window, SDL_TRUE);
+				break;
+			default:
+				SDL_ShowCursor(1);
+				SDL_SetWindowGrab(_window, SDL_FALSE);
+				break;
+		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		SDL_WarpMouseInWindow(_window, _width / 2, _height / 2);
 	}
 
 	void Window::swap() {

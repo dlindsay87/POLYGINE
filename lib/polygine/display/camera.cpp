@@ -16,22 +16,18 @@ namespace POLYGINE {
 		
 		void Camera::_swivel() {
 			_PRY.x = glm::clamp(_PRY.x, -60.0f, 60.0f);
-			modByComponent(_PRY.y, M_CIRCLE);
-			modByComponent(_PRY.z, M_CIRCLE);
-			_targPos = (_targ ? _targPos = _targ->getPosition() : glm::vec3(0.0f));
-			_position = _targPos - getPosFromAng(5.0, _PRY);
-			_viewMat = glm::lookAt(_position, _targPos, _worldUp);
+			modVec3(_PRY, M_CIRCLE, M_SEMI);
+			if (_targ) _targ->setCamYaw(_PRY.z);				
 			
-			if (_targ) {
-				_targOri = _targ->getOrientation();
-				_targ->setOrientation(_targOri.x, _targOri.y, _PRY.z);
-			}	
+			_targPos = (_targ ? _targPos = _targ->getPosition() : glm::vec3(0.0f));
+		
+			_position = _targPos - getPosFromAng(_camRadius, _PRY);
+			_viewMat = glm::lookAt(_position, _targPos, _worldUp);
 		}
 		
 		void Camera::_zoom() {
-			_zoomFactor = glm::clamp(_zoomFactor, 7.5f, 120.0f);
 			_projFactor = 1.0 / tan(glm::radians(_zoomFactor) * 0.5f);
-			
+
 			if (_win->getAspectRatio() > 1) {
 				_projMat[0][0] = _projFactor / _win->getAspectRatio();
 				_projMat[1][1] = _projFactor;
@@ -41,9 +37,8 @@ namespace POLYGINE {
 			}
 		}
 		
-		Camera::Camera(std::shared_ptr<Window> w)
-			: _win(w) {
-			_viewMat = glm::lookAt(_position, _targPos, _worldUp);
+		Camera::Camera(std::shared_ptr<Window> w, float r, float m, float wh)
+		: _win(w), _camRadius(r), _mouseSensitivity(m), _wheelSensitivity(wh) {
 			_projMat = glm::perspective(glm::radians(_zoomFactor), _win->getAspectRatio(), 0.1f, 100.0f);
 			_initUBO();
 		};
@@ -63,7 +58,15 @@ namespace POLYGINE {
 		
 		void Camera::takeInput(std::shared_ptr<Input> ip) {
 			_PRY += ip->getMotion() * _mouseSensitivity;
+			
+			static float orad = _camRadius;
+			if (ip -> isKeyPressed(SDLK_o)) {
+				_camRadius = (_camRadius >= orad * 4 ? orad : _camRadius * 2);
+				_zoomFactor = M_45;
+			}
+			
 			_zoomFactor += ip->getWheel() * _wheelSensitivity;
+			_zoomFactor = glm::clamp(_zoomFactor, 30.0f, 60.0f);
 		}
 		
 		void Camera::update() {
@@ -73,4 +76,3 @@ namespace POLYGINE {
 		};
 		
 }
-

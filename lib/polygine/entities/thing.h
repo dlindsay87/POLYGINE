@@ -14,7 +14,7 @@ namespace POLYGINE {
 		
 		glm::vec3 _forward;
 		glm::vec3 _right;
-		float _radYaw;
+		float _radYaw, _camYaw;
 		
 		std::unique_ptr<Mesh> _mesh;
 
@@ -33,6 +33,8 @@ namespace POLYGINE {
 		
 		void setMass(float m) {_mass = m;}
 		void setScale(float s) {_scale = s;}
+		
+		void setCamYaw(float f) {_camYaw = f;}
 		
 		void setPosition(glm::vec3 &p) {_position = p;}
 		void setPosition(float x, float y, float z) {

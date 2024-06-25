@@ -111,7 +111,6 @@ void Game::_update() {
 			break;
 		case GS::RUNNING:
 			_runningInput();
-			_camera->update();
 			for (const auto &t : _thingVec) t->update();
 			cout << "\rRunning! ";
 			break;
@@ -119,7 +118,8 @@ void Game::_update() {
 			cout << "\nKilled! ";
 			break;
 	}
-	_window->update();
+	_camera->update();
+	_window->update(static_cast<uint>(_state));
 }
 
 void Game::_draw() {

@@ -10,24 +10,22 @@ namespace POLYGINE {
 	
 	class Camera {
 	private:
-	    glm::vec3 _position = glm::vec3(0.0f, -5.0f, 0.0f);
-		glm::vec3 _targPos = glm::vec3(0.0f);
-		glm::vec3 _targOri = glm::vec3(0.0f);
+	    glm::vec3 _position, _targPos;
 		glm::vec3 _worldUp = glm::vec3(0.0f, 0.0f, 1.0f);
-
-		float _zoomFactor = 45.0f;
-		float _projFactor;
+	    glm::vec3 _PRY = glm::vec3(0.0f);
 		
 		std::shared_ptr<Window> _win;
 		std::shared_ptr<Thing> _targ;
 
-	    glm::vec3 _PRY = glm::vec3(0.0f);
+		float _zoomFactor = M_45;
+		float _projFactor;
+		float _camRadius;
 
 		glm::mat4 _projMat;
 		glm::mat4 _viewMat;
 
-	    float _mouseSensitivity = 0.5;
-		float _wheelSensitivity = 1.0;
+	    float _mouseSensitivity;
+		float _wheelSensitivity;
 		
 	    GLuint _UBO;
 		
@@ -38,18 +36,14 @@ namespace POLYGINE {
 		void _zoom();
 		
 	public:
-		Camera(std::shared_ptr<Window> window);
+		Camera(std::shared_ptr<Window> w, float r = 5.0, float m = 0.5, float wh = 1.0);
 		~Camera();
 
 		void linkUBOtoShaders(std::vector<std::shared_ptr<Shader>> &shaders);
 		
-		void setTarget(std::shared_ptr<Thing> t) {
-			_targ = t;
-			if (_targ) _PRY = _targ->getOrientation();
-			else _targPos = glm::vec3(0.0f);
-		}
+		void setTarget(std::shared_ptr<Thing> t) {_targ = t;}
 		
-		void takeInput( std::shared_ptr<Input> ip);
+		void takeInput(std::shared_ptr<Input> ip);
 		void update();
 		
 	};

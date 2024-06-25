@@ -35,7 +35,7 @@ namespace POLYGINE {
 	    for (auto &it : _keyMap) if (it.second && !_previousKeyMap[it.first]) return true;
 	    return false;
 	}
-	
+
 	void Input::detectMotion(SDL_MouseMotionEvent e) {
 		_dMouse.x = -e.yrel;
 		_dMouse.y = 0.0f;

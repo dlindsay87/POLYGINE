@@ -3,7 +3,7 @@
 
 #include "polygine.h"
 
-typedef enum class GameState{
+typedef enum class GameState : uint {
     GAME_OVER,
 	TITLE,    
 	RUNNING,
@@ -33,6 +33,7 @@ private:
 	std::shared_ptr<POLYGINE::Window> _window;
 	std::shared_ptr<POLYGINE::Input> _inputter;
 	std::shared_ptr<POLYGINE::Lighting> _lighter;
+	
 	std::unique_ptr<POLYGINE::Camera> _camera;
 	
 	std::vector<std::shared_ptr<POLYGINE::Shader>> _shaderVec;
