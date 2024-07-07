@@ -4,7 +4,6 @@ Game::Game(cc *name, int w, int h, unsigned int f) {
 	POLYGINE::init();
 	_timer = std::make_shared<POLYGINE::Timer>();
 	_window = std::make_shared<POLYGINE::Window>(name, w, h, f);
-	_lighter = std::make_shared<POLYGINE::Lighting>(0.2, 2);
 	_inputter = std::make_shared<POLYGINE::Input>();
 	_camera = std::make_unique<POLYGINE::Camera>(_window);
 }
@@ -33,8 +32,10 @@ void Game::_initGame() {
 		)
 	);
 	
-	_camera->linkUBOtoShaders(_shaderVec);
+	for (int i = 0; i < NUM_LIGHTS; i++) _lightVec.push_back(std::make_shared<POLYGINE::Lighting>(2));
+				
     _state = GS::TITLE;
+	_camera->linkUBOtoShaders(_shaderVec);
 }
 
 void Game::_input() {
@@ -78,11 +79,10 @@ void Game::_foreverInput() {
 
 void Game::_runningInput() {
 	if (_inputter->isAnyPressed()) {
-		glClearColor(
+		_bgc = glm::vec3(
 			_uni_dist(POLYGINE::mt_engine),
 			_uni_dist(POLYGINE::mt_engine),
-			_uni_dist(POLYGINE::mt_engine),
-			1.0f
+			_uni_dist(POLYGINE::mt_engine)
 		);
    	}
 	
@@ -94,6 +94,7 @@ void Game::_runningInput() {
 	if (_inputter->isKeyPressed(SDLK_DELETE)) {
 		_thingVec.clear();
 		_camera->setTarget(nullptr);
+		for (const auto &l : _lightVec) l->resetPosAndCol();
 	}
 	
 	_camera->takeInput(_inputter);
@@ -103,28 +104,28 @@ void Game::_runningInput() {
 void Game::_update() {
 	_foreverInput();
 	switch(_state) {
+		case GS::RUNNING:
+			_runningInput();
+			for (const auto &t : _thingVec) t->update();
+			cout << "\rRunning! ";
+			break;
 		case GS::TITLE:
 			cout << "\rTitle! ";
 			break;
 		case GS::PAUSED:
 			cout << "\rPaused! ";
 			break;
-		case GS::RUNNING:
-			_runningInput();
-			for (const auto &t : _thingVec) t->update();
-			cout << "\rRunning! ";
-			break;
 		case GS::GAME_OVER:
 			cout << "\nKilled! ";
 			break;
 	}
 	_camera->update();
-	_window->update(static_cast<uint>(_state));
+	_window->update(static_cast<uint>(_state), _bgc);
 }
 
 void Game::_draw() {
-	_lighter->draw(_shaderVec[0]);
-	for (const auto &t : _thingVec) t->draw(_shaderVec[1], _lighter->getLight());
+	for (const auto &l : _lightVec) l->draw(_shaderVec[0]);
+	for (const auto &t : _thingVec) t->draw(_shaderVec[1], _lightVec, _bgc);
 	_window->swap();
 }
 

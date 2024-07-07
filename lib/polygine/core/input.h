@@ -1,7 +1,6 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include <unordered_map>
 #include "utils/typer.h"
 
 namespace POLYGINE {

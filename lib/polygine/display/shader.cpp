@@ -12,6 +12,7 @@ namespace POLYGINE {
 		if (_success == GL_FALSE) {
 		    glGetShaderInfoLog(_vertexShader, 512, NULL, _infoLog);
 		    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << _infoLog;
+			exit(1);
 		}
 	}
 
@@ -25,6 +26,7 @@ namespace POLYGINE {
 		if (_success == GL_FALSE) {
 		    glGetShaderInfoLog(_fragmentShader, 512, NULL, _infoLog);
 		    std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << _infoLog;
+			exit(1);
 		}
 	}
 
@@ -53,7 +55,7 @@ namespace POLYGINE {
 		_compile_fragment();
 		_link_shader();
 		
-		cout << "Shaders initialized." << endl;
+		cout << "Shader " << ID << " initialized." << endl;
 	}
 	
 	Shader::~Shader() {
@@ -66,16 +68,33 @@ namespace POLYGINE {
 		glUseProgram(ID);
 	}
 	
-	void Shader::setMat4(const std::string &name, const glm::mat4 &mat) {
-        glUniformMatrix4fv(
-			glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat)
-		);
+	int Shader::getUniformLocation(const str &name) {
+		if (_uniformLocationCache.find(name) != _uniformLocationCache.end()) {
+            return _uniformLocationCache[name];
+        }
+		
+		int loc = glGetUniformLocation(ID, name.c_str());
+        if (loc != -1) _uniformLocationCache[name] = loc;   
+        else {
+			std::cerr << "Warning: Uniform '" << name << "' not found in shader!" << std::endl;
+			exit(1);
+		}
+        return loc;
+	}
+
+	void Shader::setMat4(const str &name, const glm::mat4 &mat) {
+        int loc = getUniformLocation(name);
+		if (loc != -1) glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
     }
 	
-	void Shader::setVec3(const std::string &name, const glm::vec3 &vec) {
-        glUniform3fv(
-			glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(vec)
-		);
+	void Shader::setVec3(const str &name, const glm::vec3 &vec) {
+        int loc = getUniformLocation(name);
+		if (loc != -1) glUniform3fv(loc, 1, glm::value_ptr(vec));
     }
+	
+	void Shader::setVec3Array(const str &name, const glm::vec3 (&v)[5]) {
+        int loc = getUniformLocation(name);
+		if (loc != -1) glUniform3fv(loc, 5, glm::value_ptr(v[0]));
+	}
 
 }

@@ -37,9 +37,9 @@ namespace POLYGINE {
 	}
 
 	void Input::detectMotion(SDL_MouseMotionEvent e) {
-		_dMouse.x = -e.yrel;
-		_dMouse.y = 0.0f;
-		_dMouse.z = e.xrel;
+		_dMouse.x = e.yrel; //pitch
+		_dMouse.y = 0.0f; //roll
+		_dMouse.z = e.xrel; //yaw
 	}
 	
 	void Input::detectWheel(SDL_MouseWheelEvent e) {

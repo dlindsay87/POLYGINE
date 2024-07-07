@@ -5,7 +5,7 @@
 
 namespace POLYGINE {
 	
-	char* fileReader(cc* filePath);
+	char* fileReader(cc* filePath, bool verbose = false);
 	
 }
 

@@ -17,6 +17,8 @@ namespace POLYGINE {
 		const GLchar* _fragSource;
 		GLuint _fragmentShader;
 		
+		std::unordered_map<str, int> _uniformLocationCache;
+		
 		void _compile_vertex();
 		void _compile_fragment();
 		void _link_shader();
@@ -30,8 +32,12 @@ namespace POLYGINE {
 
 		void use();
 		
-		void setMat4(const std::string &name, const glm::mat4 &mat);
-		void setVec3(const std::string &name, const glm::vec3 &vec);
+		int getUniformLocation(const str &name);
+		
+		void setMat4(const str &name, const glm::mat4 &mat);
+		void setVec3(const str &name, const glm::vec3 &vec);
+		
+		void setVec3Array(const str &name, const glm::vec3 (&v)[5]);
 
 	};
 	

@@ -74,15 +74,15 @@ namespace POLYGINE {
 			cerr << "SDL window creation failed: " << SDL_GetError() << endl;
 			exit(1);
 		}
-		
+
 		_context_version();
 		_init_display();
 		_is_vsynced();
 	}
 	
 	Window::~Window() {
-	  SDL_GL_DeleteContext(_context);
-	  SDL_DestroyWindow(_window);
+		SDL_GL_DeleteContext(_context);
+		SDL_DestroyWindow(_window);
 	}
 	
 	void Window::takeInput(std::shared_ptr<Input> ip) {
@@ -94,23 +94,25 @@ namespace POLYGINE {
 		}
 	}
 	
-	void Window::update(uint state) {
+	void Window::update(uint state, glm::vec3 bgc) {
 		switch (state){
-			case 2:
-				SDL_ShowCursor(0);
+			case 0:
+				SDL_ShowCursor(SDL_DISABLE);
 				SDL_WarpMouseInWindow(_window, _width / 2, _height / 2);
 				SDL_SetWindowGrab(_window, SDL_TRUE);
 				break;
 			default:
-				SDL_ShowCursor(1);
+				SDL_ShowCursor(SDL_ENABLE);
 				SDL_SetWindowGrab(_window, SDL_FALSE);
 				break;
 		}
+		glClearColor(bgc.x, bgc.y, bgc.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void Window::swap() {
 		SDL_GL_SwapWindow(_window);
+		
 	}
 	
 }

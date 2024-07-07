@@ -57,7 +57,7 @@ namespace POLYGINE {
         }
 		
 		void Camera::takeInput(std::shared_ptr<Input> ip) {
-			_PRY += ip->getMotion() * _mouseSensitivity;
+			_PRY -= ip->getMotion() * _mouseSensitivity;
 			
 			static float orad = _camRadius;
 			if (ip -> isKeyPressed(SDLK_o)) {

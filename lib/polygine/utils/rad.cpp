@@ -15,7 +15,7 @@ namespace POLYGINE {
 	glm::vec3 getPosFromAng(float r, glm::vec3 ang) {
 		ang *= M_DEG2RAD;
 		return glm::vec3(
-			r * sin(ang.z) * cos(ang.x),
+			r * -sin(ang.z) * cos(ang.x),
 	        r * cos(ang.x) * cos(ang.z),
 			r * sin(ang.x)
 		);
@@ -38,11 +38,12 @@ namespace POLYGINE {
 			angle += (float)(M_TAU / tris);
 		}
 	}
-	
-	void genCubeSphere(std::vector<glm::vec3> &vertices, gluintvec &indices, uint subs) {
-	    // Clear any existing data
+
+	void genCubeSphere(std::vector<glm::vec3>& vertices, gluintvec& indices, uint subs) {
+		// Clear any existing data
 	    vertices.clear();
 	    indices.clear();
+
 	    // Generate vertices and indices for each face
 	    for (int face = 0; face < 6; face++) {
 	        for (int i = 0; i <= subs; i++) {
@@ -59,11 +60,11 @@ namespace POLYGINE {
 	                    case 1: // -X face
 	                        vertex = glm::vec3(-1.0f, -1.0f + 2.0f * a, -1.0f + 2.0f * b);
 	                        break;
-	                    case 2: // +Y face
-	                        vertex = glm::vec3(-1.0f + 2.0f * a, 1.0f, -1.0f + 2.0f * b);
-	                        break;
-	                    case 3: // -Y face
+	                    case 2: // -Y face
 	                        vertex = glm::vec3(-1.0f + 2.0f * a, -1.0f, -1.0f + 2.0f * b);
+	                        break;
+	                    case 3: // +Y face
+	                        vertex = glm::vec3(-1.0f + 2.0f * a, 1.0f, -1.0f + 2.0f * b);
 	                        break;
 	                    case 4: // +Z face
 	                        vertex = glm::vec3(-1.0f + 2.0f * a, -1.0f + 2.0f * b, 1.0f);
@@ -80,15 +81,31 @@ namespace POLYGINE {
 	                if (i < subs && j < subs) {
 	                    int base = (face * (subs + 1) + i) * (subs + 1) + j;
 	                    indices.push_back(base);
+						indices.push_back(base + (subs + 1));
 	                    indices.push_back(base + 1);
-	                    indices.push_back(base + (subs + 1));
-	                    indices.push_back(base + 1);
-	                    indices.push_back(base + (subs + 1) + 1);
-	                    indices.push_back(base + (subs + 1));
+						indices.push_back(base + (subs + 1) + 1);
+						indices.push_back(base + 1);
+						indices.push_back(base + (subs + 1));
+	                    
 	                }
 	            }
 	        }
 	    }
+	}
+	
+	void thinVertices(std::vector<glm::vec3> &vertices, gluintvec &indices) {
+		std::unordered_set<glm::vec3> uniqueVerts(vertices.begin(), vertices.end());
+		
+		for (auto &idx : indices) {
+			idx = std::distance(uniqueVerts.begin(), uniqueVerts.find(vertices[idx]));
+		}
+		
+		vertices.assign(uniqueVerts.begin(), uniqueVerts.end());
+	}
+	
+	// Maybe redundant because I can just asign the normals as the vertices in use?
+	void getNormalsFromCenter(std::vector<glm::vec3> &vertices, std::vector<glm::vec3> &normals) {
+		normals.assign(vertices.begin(), vertices.end());
 	}
 	
 	void circleTweenScalar(float &init, float fin, float inc) {
@@ -98,47 +115,51 @@ namespace POLYGINE {
 		else init += std::copysign(inc, dir);
 	}
 	
-	/*void getPolFromCart(cartesian &c, polar &p) {
-		p.r = sqrt(pow(c.x, 2.0) + pow(c.y, 2.0) + pow(c.z, 2.0));
-		p.theta = acos(c.z/p.r);
-		p.phi = atan2(c.y, c.x); //copysign(acos(c.x/sqrt(pow(c.x, 2.0) + pow(c.y, 2.0))), c.y);
-	}
+	// I went cuckoo trying to calculate normals for the cubsphere
+	// Cross products wouldn't always point outward or average correctly
+	// Had to remove redundant vertices and map the right indices
+	// Turns out since a cubsphere is a uniform polyhedron, my vertices are my normals
+	// I already normalized my vertices around the object's center :(
+	// Code kept for legacy, in case it may serve a purpose later
+	/*void getCubeSphereNormals(std::vector<glm::vec3> &vertices, std::vector<glm::vec3> &normals, gluintvec &indices) {
+		// Initialize normals to zero
+		int faces = vertices.size() - 2;
+		normals.clear();
+	    normals.resize(vertices.size(), glm::vec3(0.0f));
+		
+	    // Iterate over each triangle and calculate the normals
+	    for (size_t i = 0; i < indices.size(); i += M_DIM) {
+	        // Get the indices of the triangle vertices
+	        GLuint idx00 = indices[i]; // center point
+	        GLuint idx01 = indices[i + 1];
+	        GLuint idx02 = indices[i + 2];
+			
+	        // Get the triangle vertices
+	        glm::vec3 v00 = vertices[idx00];
+	        glm::vec3 v01 = vertices[idx01];
+	        glm::vec3 v02 = vertices[idx02];
 
-	void getCartFromPol(polar &p, cartesian &c) {
-		c.x = p.r * sin(p.theta) * cos(p.phi);
-		c.y = p.r * sin(p.theta) * sin(p.phi);
-		c.z = p.r * cos(p.theta);
+			glm::vec3 a1 = v01 - v00;
+			glm::vec3 b1 = v02 - v00;
+
+			if ((i / faces) % 2 != 0) {
+				a1 = v02 - v00;
+				b1 = v01 - v00;
+			}
+
+	        // Calculate the normal for the current triangle
+			glm::vec3 normal1 = glm::cross(a1, b1);
+
+	        // Accumulate the normal for each vertex of the triangle
+	        normals[idx00] += normal1;
+	        normals[idx01] += normal1 / 2.0f;
+	        normals[idx02] += normal1 / 2.0f;
+	    }
+
+	    // Normalize the accumulated normals for each vertex
+	    for (auto &n : normals) {
+	        n = glm::normalize(n);
+	    }
 	}*/
 	
-	/*void rotate(glfltvec &arr, float rx, float ry, float rz){
-		rx *= M_DEG2RAD;
-		ry *= M_DEG2RAD;
-		rz *= M_DEG2RAD;
-		
-		for (int i = M_DIM; i < arr.size(); i += M_DIM) {
-			float tx = arr[i] - arr[0];
-			float ty = arr[i+1] - arr[1];
-			//float tz = arr[i+2] - arr[2];
-			
-			arr[i] = tx * cos(ry) - ty * sin(ry) + arr[0];
-			arr[i+1] = tx * sin(ry) + ty * cos(ry) + arr[1];
-			//arr[i+2] = + arr[2];
-		}
-	}
-
-	void scale(glfltvec &arr, float s) {
-		for (int i = M_DIM; i < arr.size(); i += M_DIM) {
-			arr[i] = s * (arr[i] - arr[0]) + arr[0];
-			arr[i+1] = s * (arr[i+1] - arr[1]) + arr[1];
-			arr[i+2] = s * (arr[i+2] - arr[2]) + arr[2];
-		}
-	}
-
-	void translate(glfltvec &arr, float tx, float ty, float tz) {
-		for (int i = 0; i < arr.size(); i += M_DIM) {
-			arr[i] += tx;
-			arr[i+1] += ty;
-			arr[i+2] += tz;
-		}
-	}*/
 }

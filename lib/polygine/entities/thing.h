@@ -1,8 +1,9 @@
 #ifndef THING_H
 #define THING_H
 
+#include "core/init.h"
 #include "core/input.h"
-#include "mesh.h"
+#include "display/lighting.h"
 
 namespace POLYGINE {
 
@@ -17,14 +18,15 @@ namespace POLYGINE {
 		float _radYaw, _camYaw;
 		
 		std::unique_ptr<Mesh> _mesh;
+		
+		std::uniform_real_distribution<float> _thing_dist;
 
 	public:
 		Thing();
-		Thing(uint p, ST m);
-
+		
 		void takeInput(std::shared_ptr<Input> ip);
 		void update();
-		void draw(std::shared_ptr<Shader> shader, glm::vec3 light);
+		void draw(std::shared_ptr<Shader> shader, std::vector<std::shared_ptr<Lighting>> lights, glm::vec3 bgc);
 
 		float getMass() {return _mass;}
 		float getScale() {return _scale;}

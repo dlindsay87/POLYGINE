@@ -4,10 +4,10 @@
 #include "polygine.h"
 
 typedef enum class GameState : uint {
-    GAME_OVER,
-	TITLE,    
-	RUNNING,
-	PAUSED
+    RUNNING = 0,
+	TITLE = 1,    
+	PAUSED = 2,
+	GAME_OVER = 3
 } GS;
 
 
@@ -32,12 +32,14 @@ private:
 	std::shared_ptr<POLYGINE::Timer> _timer;
 	std::shared_ptr<POLYGINE::Window> _window;
 	std::shared_ptr<POLYGINE::Input> _inputter;
-	std::shared_ptr<POLYGINE::Lighting> _lighter;
 	
 	std::unique_ptr<POLYGINE::Camera> _camera;
 	
 	std::vector<std::shared_ptr<POLYGINE::Shader>> _shaderVec;
 	std::vector<std::shared_ptr<POLYGINE::Thing>> _thingVec;
+	std::vector<std::shared_ptr<POLYGINE::Lighting>> _lightVec;
+	
+	glm::vec3 _bgc;
 
 	GS _state;
 

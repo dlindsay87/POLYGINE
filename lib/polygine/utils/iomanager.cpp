@@ -2,11 +2,11 @@
 
 namespace POLYGINE {
 	
-	char* fileReader(cc* filePath) {
-		cout << "Reading file " << filePath << "... ";
+	char* fileReader(cc* filePath, bool verbose) {
+		if (verbose) cout << "Reading file " << filePath << "...\n";
 		std::ifstream file (filePath, ios::in|ios::binary|ios::ate);
 		if (!file.is_open()) {
-			std::cerr << "Failed to open file.\n";
+			std::cerr << "Failed to open file " << filePath << endl;
 			exit(1);
 		}
 
@@ -17,7 +17,7 @@ namespace POLYGINE {
 		content[size] = '\0';
 	    file.close();
 		
-		cout << "File read.\n";
+		if (verbose) cout << "File read.\n";
 		return content;
 		
 	}

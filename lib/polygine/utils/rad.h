@@ -15,7 +15,7 @@ namespace POLYGINE {
 	#define M_45 45.0f
 	#define M_DEG2RAD (M_PI / M_SEMI)
 	#define M_RAD2DEG (M_SEMI / M_PI)
-
+	
 	float modScalar(float f, float mod, float offset = 0.0f);
 	void modVec3(glm::vec3 &vec, float mod, float offset = 0.0f);
 
@@ -24,18 +24,14 @@ namespace POLYGINE {
 	void fan2D(std::vector<glm::vec3> &vertices, gluintvec &indices, int tris);
 	void genCubeSphere(std::vector<glm::vec3> &vertices, gluintvec &indices, uint subs);
 	
+	void thinVertices(std::vector<glm::vec3> &vertices, gluintvec &indices);
+	
+	void getNormalsFromCenter(std::vector<glm::vec3> &vertices, std::vector<glm::vec3> &normals);
+	
 	void circleTweenScalar(float &init, float fin, float inc = 6.0f);
+	
+	//void getCubeSphereNormals(std::vector<glm::vec3> &vertices, std::vector<glm::vec3> &normals, gluintvec &indices);
 
-	//legacy code I'm not sure is useful or even correct
-	/*struct cartesian {float x; float y; float z;};
-	struct polar {float r; float theta; float phi;};
-	void getPolFromCart(cartesian &c, polar &p);
-	void getCartFromPol(polar &p, cartesian &c);*/
-
-	// custom transformations that are redundant
-	/*void rotate(glfltvec &arr, float rx, float ry, float rz);
-	void scale(glfltvec &arr, float s);
-	void translate(glfltvec &arr, float tx, float ty, float tz);*/
 }
 
 #endif
