@@ -9,7 +9,6 @@ namespace GAME {
             _imgUtil = new UTIL::ImguiUtil();
             _utilWidth = 160;
         }
-
         _init();
     }
 

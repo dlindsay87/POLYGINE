@@ -55,12 +55,13 @@ namespace POLY {
             glGenBuffers(1, &_VBO);
             glGenBuffers(1, &_VNO);
             glGenVertexArrays(1, &_VAO);
-
         }
 
-        ~Mesh() {
+        virtual ~Mesh() {
             glBindVertexArray(0);
             glDeleteVertexArrays(1, &_VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             glDeleteBuffers(1, &_VNO);
             glDeleteBuffers(1, &_VBO);
             glDeleteBuffers(1, &_EBO);

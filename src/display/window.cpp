@@ -6,8 +6,6 @@ namespace DISPLAY {
 		SDL_GL_DeleteContext(_context);
 		//SDL_DestroyRenderer(_renderer);
 		SDL_DestroyWindow(_window);
-
-		SDL_Quit();
 	}
 
 	void Window::_createWindow() {

@@ -17,3 +17,6 @@ tasks.json
 
 # imgui
 /imgui.ini
+
+# log
+/valgrind_log*.txt

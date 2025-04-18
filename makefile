@@ -25,7 +25,7 @@ INC_FLAGS := $(addprefix -I, $(INC_PATHS)) $(shell sdl2-config --cflags)
 # Compiler and flags
 CXX := g++
 DEP_FLAGS = -MMD -MP -MF $(@:.o=.d)
-CXXFLAGS := -std=c++17 -Wall -g -c $(INC_FLAGS)
+CXXFLAGS := -std=c++17 -Wall -ggdb3 -c $(INC_FLAGS)
 LDFLAGS := -lSDL2 -lSDL2_ttf -lGLEW -lGL
 
 TARGET := polygine

@@ -76,7 +76,7 @@ namespace DISPLAY {
 		glm::vec3 getBGC() const {return _bgc;}
 
 		SDL_Window* getWindow() const {return _window;}
-		SDL_GLContext* getContext() {return &_context;}
+		SDL_GLContext getContext() const {return _context;}
 	};
 	
 }

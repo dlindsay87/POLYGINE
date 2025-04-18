@@ -1,5 +1,4 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 #include <SDL2/SDL.h>
 #include <chrono>
@@ -18,7 +17,7 @@ namespace CORE {
         tp_sc _startTime, _currentTime, _frameStartTime;
 
         static const int TARGET_FPS = 60;
-        float _fps;
+        float _fps = 60.0f;
 
         float _frameTimes[TARGET_FPS];
 
@@ -39,4 +38,3 @@ namespace CORE {
     };
 }
 
-#endif

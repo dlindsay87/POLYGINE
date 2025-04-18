@@ -1,5 +1,4 @@
-#ifndef INIT_H
-#define INIT_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -17,5 +16,3 @@ namespace CORE {
 	extern void initSDL();
 	
 }
-
-#endif

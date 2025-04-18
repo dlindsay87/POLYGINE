@@ -1,5 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include "init.h"
 
@@ -58,7 +57,7 @@ namespace GAME {
 
         ~Game() {
             if (_imgUtil) delete _imgUtil;
-            for (ENT::Wall *wall : _walls) delete wall;
+            for (auto *wall : _walls) delete wall;
             for (auto& [name, shader] : _shaders) delete shader;
             _shaders.clear();
             SDL_Quit();
@@ -68,5 +67,3 @@ namespace GAME {
 
     };
 }
-
-#endif

@@ -9,8 +9,8 @@ in vec3 ViewDir;
 #define SPEC_STRENGTH 0.500000
 #define SHINE_FACTOR 64.000000
 
-#define AMBIENT_STRENGTH 0.711000
-#define AMBIENT_BLEND 0.727000
+#define AMBIENT_STRENGTH 0.430000
+#define AMBIENT_BLEND 0.750000
 
 //uniform vec3 attenuationFactors;
 

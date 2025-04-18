@@ -11,7 +11,7 @@ namespace CORE {
         _frameTimes[cf] = _delta(_currentTime);
         _currentTime = std::chrono::steady_clock::now();
         
-        for (const float& f : _frameTimes) frameTimeTotal += f;
+        for (int i = 0; i < cnt; ++i) frameTimeTotal += _frameTimes[i];
         
         cf = (cf + 1 == TARGET_FPS ? 0: cf + 1);
         cnt = (cnt == TARGET_FPS ? TARGET_FPS : cnt + 1);
@@ -23,8 +23,7 @@ namespace CORE {
 
         float aveFPS = cnt / frameTimeTotal;
 
-        if (aveFPS < static_cast<float>(TARGET_FPS)) _fps =  aveFPS;
-        else _fps = static_cast<float>(TARGET_FPS);
+        _fps = (aveFPS < static_cast<float>(TARGET_FPS)) ? aveFPS : static_cast<float>(TARGET_FPS);
     }
 
     void Timer::_limitFrameTime() {
