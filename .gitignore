@@ -15,3 +15,5 @@ launch.json
 settings.json
 tasks.json
 
+# imgui
+/imgui.ini
