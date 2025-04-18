@@ -9,8 +9,8 @@ in vec3 ViewDir;
 #define SPEC_STRENGTH 0.500000
 #define SHINE_FACTOR 64.000000
 
-#define AMBIENT_STRENGTH 0.214000
-#define AMBIENT_BLEND 0.886000
+#define AMBIENT_STRENGTH 0.711000
+#define AMBIENT_BLEND 0.727000
 
 //uniform vec3 attenuationFactors;
 
@@ -23,7 +23,7 @@ uniform vec3 bgc;
 
 void main() {
     vec3 ViewDir = normalize(FragPos - camPos);
-    vec3 ambient = AMBIENT_STRENGTH * mix(bgc, lightColor, AMBIENT_BLEND);
+    vec3 ambient = AMBIENT_STRENGTH * mix(lightColor, bgc, AMBIENT_BLEND);
 
     vec3 lightDir = normalize(lightPos - FragPos);
     float lightDistance = length(lightPos - FragPos);

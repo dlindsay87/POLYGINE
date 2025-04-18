@@ -23,7 +23,7 @@ uniform vec3 bgc;
 
 void main() {
     vec3 ViewDir = normalize(FragPos - camPos);
-    vec3 ambient = AMBIENT_STRENGTH * mix(bgc, lightColor, AMBIENT_BLEND);
+    vec3 ambient = AMBIENT_STRENGTH * mix(lightColor, bgc, AMBIENT_BLEND);
 
     vec3 lightDir = normalize(lightPos - FragPos);
     float lightDistance = length(lightPos - FragPos);

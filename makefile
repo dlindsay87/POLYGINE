@@ -44,7 +44,7 @@ $(TARGET): $(OBJS)
 $(BUILD_DIR)/%.o: %.cpp makefile
 	@mkdir -p $(@D)
 	@echo "Compiling $< -> $@..."
-	$(CXX) $(CXXFLAGS) $(DEP_FLAGS) $< -o $@
+	@$(CXX) $(CXXFLAGS) $(DEP_FLAGS) $< -o $@
 
 -include $(DEPS)
 

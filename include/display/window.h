@@ -46,6 +46,7 @@ namespace DISPLAY {
 		//SDL_Renderer* _renderer;
 		SDL_GLContext _context;
 		const unsigned char* _version;
+		int _utilOffset;
 
 		void _createWindow();
 		//void _createRenderer();
@@ -57,7 +58,7 @@ namespace DISPLAY {
 	public:
 		~Window();
 
-		void initDisplay(const char* name, int w = 640, int h = 480, unsigned int f = WF::TYPICAL);
+		void initDisplay(const char* name, int w = 640, int h = 480, int offset = 0, unsigned int f = WF::TYPICAL);
 		void handleEvents(CORE::Input* ip);
 		void update(uint state);
 
@@ -67,9 +68,9 @@ namespace DISPLAY {
 
 		void setVsync();
 
-		int getWidth() const {return _width - 160;}
+		int getWidth() const {return _width - _utilOffset;}
 		int getHeight() const {return _height;}
-		float getAspectRatio() const {return (float)(_width - 160) / (float)_height;}
+		float getAspectRatio() const {return (float)(_width - _utilOffset) / (float)_height;}
 
 		void setBGC(glm::vec3 bgc) {_bgc = bgc;}
 		glm::vec3 getBGC() const {return _bgc;}

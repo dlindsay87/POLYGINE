@@ -14,8 +14,7 @@ This will use reading/writing to your folder.
 - Goofing with flecs
 - Importing models and animation
 
-**SUBMODULES**  
-\**Use --recursive when cloning*
+**SUBMODULES** \**Use `--recursive` when cloning*
 - Dear ImGUI
 
 **EXTERNAL DEPENDENCIES**

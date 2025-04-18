@@ -42,10 +42,11 @@ namespace GAME {
         CORE::Timer _timer;
         CORE::Input _input;
 
-        UTIL::ImguiUtil _imgUtil;
+        UTIL::ImguiUtil *_imgUtil = nullptr;
+        int _utilWidth = 0;
 
         ENT::Player _player;
-        std::vector<ENT::Thing*> _things;
+        std::vector<ENT::Wall*> _walls;
         
         void _init();
         void _handleEvents();
@@ -53,10 +54,11 @@ namespace GAME {
         void _draw();
 
     public:
-        Game();
+        Game(bool shaderDev);
 
         ~Game() {
-            for (ENT::Thing* thing : _things) delete thing;
+            if (_imgUtil) delete _imgUtil;
+            for (ENT::Wall *wall : _walls) delete wall;
             for (auto& [name, shader] : _shaders) delete shader;
             _shaders.clear();
             SDL_Quit();

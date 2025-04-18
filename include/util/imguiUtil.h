@@ -65,23 +65,50 @@ namespace UTIL{
             ImGui::SetWindowPos(ImVec2(pos.x, pos.y));
             ImGui::SetWindowSize(ImVec2(size.x, size.y));
 
-            ImGui::Text("shader.frag");
-            ImGui::SliderFloat("GAMMA", &_fragMap.at("{{GAMMA}}"), 0.0f, 3.2f);
-            ImGui::SliderFloat("SPEC_STRENGTH", &_fragMap.at("{{SPEC_STRENGTH}}"), 0.0f, 1.0f);
+            float fullWidth = ImGui::GetContentRegionAvail().x;
 
-            if (ImGui::SliderInt("SHINE", &shineIndex, 0, 9, std::to_string(1 << shineIndex).c_str())) {
+            ImGui::Text("shader.frag");
+            ImGui::Spacing();
+
+            ImGui::Text("GAMMA FACTOR:");
+            ImGui::SetNextItemWidth(fullWidth);
+            ImGui::SliderFloat("##GAMMA", &_fragMap.at("{{GAMMA}}"), 0.0f, 3.2f);
+            ImGui::Spacing();
+
+            ImGui::Text("SPEC STRENGTH:");
+            ImGui::SetNextItemWidth(fullWidth);
+            ImGui::SliderFloat("##SPEC_STRENGTH", &_fragMap.at("{{SPEC_STRENGTH}}"), 0.0f, 1.0f);
+            ImGui::Spacing();
+
+            ImGui::Text("SHINE FACTOR:");
+            ImGui::SetNextItemWidth(fullWidth);
+            if (ImGui::SliderInt("##SHINE", &shineIndex, 0, 9, std::to_string(1 << shineIndex).c_str())) {
                 _fragMap.at("{{SHINE_FACTOR}}") = (float)(1 << shineIndex);
             }
+            ImGui::Spacing();
 
-            ImGui::SliderFloat("AMBIENT_STRENGTH", &_fragMap.at("{{AMBIENT_STRENGTH}}"), 0.0f, 1.0f);
-            ImGui::SliderFloat("AMBIENT_BLEND", &_fragMap.at("{{AMBIENT_BLEND}}"), 0.0f, 1.0f);
+            ImGui::Text("AMBIENT STRENGTH:");
+            ImGui::SetNextItemWidth(fullWidth);
+            ImGui::SliderFloat("##AMBIENT_STRENGTH", &_fragMap.at("{{AMBIENT_STRENGTH}}"), 0.0f, 1.0f);
+            ImGui::Spacing();
 
-            if (ImGui::Button("Test")) {
+            ImGui::Text("AMBIENT BLEND:");
+            ImGui::SetNextItemWidth(fullWidth);
+            ImGui::SliderFloat("##AMBIENT_BLEND", &_fragMap.at("{{AMBIENT_BLEND}}"), 0.0f, 1.0f);
+            ImGui::Spacing();
+
+            
+            float buttonWidth = (fullWidth - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+
+            ImGui::SetNextItemWidth(buttonWidth);
+            if (ImGui::Button("Test", ImVec2(buttonWidth, 0))) {
                 std::string filled = replaceFragVars(_fragSource);
                 shader->testFrag((const GLchar*)filled.c_str());
             }
 
-            if (ImGui::Button("Save")) {
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(buttonWidth);
+            if (ImGui::Button("Save", ImVec2(buttonWidth, 0))) {
                 std::string filled = replaceFragVars(_fragSource);
                 fileSaver("shaders/shader.frag", (char*)filled.c_str());
             

@@ -67,12 +67,13 @@ namespace DISPLAY {
 
 	void Window::_resize() {
 		SDL_GetWindowSize(_window, &_width, &_height);
-		glViewport(160, 0, _width - 160, _height);
+		glViewport(_utilOffset, 0, _width - _utilOffset, _height);
 	}
 
-	void Window::initDisplay(const char* name, int w, int h, unsigned int f) {
+	void Window::initDisplay(const char* name, int w, int h, int offset, unsigned int f) {
 		_name = name;
-		_width = w, _height = h; \
+		_width = w, _height = h;
+		_utilOffset = offset;
 		_flags = f;
 		
 		_createWindow();
@@ -82,7 +83,7 @@ namespace DISPLAY {
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		//glShadeModel(GL_SMOOTH);
-		glViewport(160, 0, _width - 160, _height);
+		glViewport(_utilOffset, 0, _width - _utilOffset, _height);
 
 		cout << "Display initialized. ";
 		setVsync();
