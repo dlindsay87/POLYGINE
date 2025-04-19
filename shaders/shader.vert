@@ -9,15 +9,16 @@ out vec3 Normal;
 uniform mat4 model;
 
 layout(std140) uniform Matrices {
-    mat4 view;
-    mat4 proj;
-    //vec3 camPos;
+	mat4 view;
+	mat4 proj;
+	//vec3 camPos;
 };
 
-void main() {
+void main()
+{
 	FragPos = vec3(model * vec4(aPos, 1.0));
 	Normal = normalize(mat3(transpose(inverse(model))) * aNormal);
-    gl_Position = proj * view * vec4(FragPos, 1.0);
+	gl_Position = proj * view * vec4(FragPos, 1.0);
 
-    //vec3 ViewDir = normalize(camPos - FragPos);
+	//vec3 ViewDir = normalize(camPos - FragPos);
 }

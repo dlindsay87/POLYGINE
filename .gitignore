@@ -19,4 +19,8 @@ tasks.json
 /imgui.ini
 
 # log
+/logs/**
 /valgrind_log*.txt
+
+# formatting
+/.clang-format

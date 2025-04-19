@@ -1,24 +1,25 @@
 #ifndef IOMANAGER_H
 #define IOMANAGER_H
 
-#include <iostream>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 
-using std::cout;
-using std::cin;
 using std::cerr;
+using std::cin;
+using std::cout;
 
 using std::endl;
 
-namespace UTIL {
+namespace UTIL
+{
 
-	using std::ios;
-	
-	char* fileReader(const char* filePath, bool verbose = false);
+using std::ios;
 
-	void fileSaver(const char* filePath, char* content, bool verbose = false);
-	
-}
+char *fileReader(const char *filePath, bool verbose = false);
+
+void fileSaver(const char *filePath, char *content, bool verbose = false);
+
+} // namespace UTIL
 
 #endif
