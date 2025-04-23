@@ -1,4 +1,5 @@
 #include "game.h"
+#include "flecs.h"
 
 void printHelp()
 {

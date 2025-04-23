@@ -5,6 +5,8 @@ BUILD_DIR := build
 IMGUI_DIR := deps/imgui
 BACKENDS_DIR := $(IMGUI_DIR)/backends
 
+FLECS_DIR := deps/flecs/distr
+
 IMGUI_SRCS := \
 	$(IMGUI_DIR)/imgui.cpp \
 	$(IMGUI_DIR)/imgui_draw.cpp \
@@ -19,14 +21,14 @@ OBJS := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 DEPS := $(OBJS:.o=.d)
 
 # Include flags for each subdir in include/ and imgui/
-INC_PATHS := $(shell find $(INC_DIR) -type d) $(IMGUI_DIR) $(BACKENDS_DIR)
+INC_PATHS := $(shell find $(INC_DIR) -type d) $(IMGUI_DIR) $(BACKENDS_DIR) $(FLECS_DIR)
 INC_FLAGS := $(addprefix -I, $(INC_PATHS)) $(shell sdl2-config --cflags)
 
 # Compiler and flags
 CXX := g++
 DEP_FLAGS = -MMD -MP -MF $(@:.o=.d)
 CXXFLAGS := -std=c++17 -Wall -ggdb3 -c $(INC_FLAGS)
-LDFLAGS := -lSDL2 -lSDL2_ttf -lGLEW -lGL
+LDFLAGS := -lSDL2 -lSDL2_ttf -lGLEW -lGL -Ldeps/flecs -lflecs
 
 TARGET := polygine
 
@@ -41,7 +43,7 @@ $(TARGET): $(OBJS)
 	@$(CXX) $^ -o $@ $(LDFLAGS)
 
 # Compile source files to objects
-$(BUILD_DIR)/%.o: %.cpp makefile
+$(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	@echo "Compiling $< -> $@..."
 	@$(CXX) $(CXXFLAGS) $(DEP_FLAGS) $< -o $@

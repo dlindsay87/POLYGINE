@@ -18,6 +18,10 @@ tasks.json
 # imgui
 /imgui.ini
 
+# flecs
+/deps/flecs/build/**
+/deps/flecs/*.so
+
 # log
 /logs/**
 /valgrind_log*.txt
